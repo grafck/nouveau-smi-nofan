@@ -64,39 +64,47 @@ func GetGpuName() string {
 }
 
 func GetCodename() string {
-	cmd := exec.Command("grep", "-i", "chipset", "/var/log/Xorg.0.log")
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		fmt.Println("Error:", err)
-		return ""
-	}
-	if err := cmd.Start(); err != nil {
-		fmt.Println("Error starting the command:", err)
-		return ""
-	}
-	defer stdout.Close()
+    cmd := exec.Command("glxinfo")
+    stdout, err := cmd.StdoutPipe()
+    if err != nil {
+        fmt.Println("Error:", err)
+        return ""
+    }
+    if err := cmd.Start(); err != nil {
+        fmt.Println("Error starting glxinfo command:", err)
+        return ""
+    }
+    defer stdout.Close()
 
-	scanner := bufio.NewScanner(stdout)
-	var codename string
+    scanner := bufio.NewScanner(stdout)
+    var codename string
 
-	for scanner.Scan() {
-		line := scanner.Text()
-		if strings.Contains(line, "Chipset:") {
-			chipset := strings.TrimSpace(strings.Split(line, "Chipset:")[1])
-			codename = strings.Replace(chipset, "NVIDIA ", "", 1)
-			codename = strings.Replace(codename, "\"", "", -1)
-			break
-		}
-	}
+    for scanner.Scan() {
+        line := scanner.Text()
+        if strings.Contains(line, "OpenGL renderer") {
+            // Example line: "OpenGL renderer string: NV106"
+            parts := strings.Split(line, ":")
+            if len(parts) < 2 {
+                continue
+            }
+            renderer := strings.TrimSpace(parts[1])
+            // Look for the "NV" substring in the renderer info
+            if idx := strings.Index(renderer, "NV"); idx != -1 {
+                codename = renderer[idx:]
+                codename = strings.Fields(codename)[0] // extract the first word (e.g., "NV106")
+                break
+            }
+        }
+    }
 
-	if err := scanner.Err(); err != nil {
-		fmt.Println("Error reading output:", err)
-	}
+    if err := scanner.Err(); err != nil {
+        fmt.Println("Error reading glxinfo output:", err)
+    }
 
-	if codename == "" {
-		fmt.Println("Error: Chipset information not found.")
-		return ""
-	}
+    if codename == "" {
+        fmt.Println("Error: Codename information not found.")
+        return ""
+    }
 
-	return codename
+    return codename
 }
