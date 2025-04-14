@@ -58,3 +58,5 @@ Flags:
   -n, --min-fan-speed int   Set the min fan speed. Default value 40
   -v, --version             Print version information
 ```
+### Notes:
+- `CODE NAME` & `FAMILY CODE NAME` fails when the cmd is run under tty.
