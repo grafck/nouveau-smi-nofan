@@ -3,7 +3,8 @@
 
 ### Prerequisites
 - **Git**: Required to clone the repository
-- **Go**: Version 1.23.4 or later is required. Verify by running `go version`.
+- **Go**: Version 1.23.4 or later is expected. Required to build the binary. No need if you are downloading binary.
+- **Mesa Utils**: Version 9.0.0-5 or later is expected. Required because this relies on `glxinfo` cmd to get `CODE NAME`.
 - **Nouveau Driver**: The Nouveau driver for NVIDIA GPUs must be installed and active.
 - **Go Modules**:
   - `go-pretty` v6.6.4 or later by jedib0t
