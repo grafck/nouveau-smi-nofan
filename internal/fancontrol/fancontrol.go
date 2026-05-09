@@ -16,7 +16,8 @@ import (
 func GetFanspeed() (string, string) {
 	hwmonPath, err := hardware.FindHwmonPath("nouveau")
 	if err != nil {
-		log.Fatalf("Error: %v", err)
+		log.Printf("Warning: %v", err)
+		return "UNKNOWN", ""
 	}
 
 	pwm1EnablePath := filepath.Join(hwmonPath, "pwm1_enable")
@@ -24,7 +25,8 @@ func GetFanspeed() (string, string) {
 
 	pwm1EnableData, err := os.ReadFile(pwm1EnablePath)
 	if err != nil {
-		log.Fatalf("Error reading pwm1_enable file: %v", err)
+		log.Printf("Warning: Error reading pwm1_enable file: %v", err)
+		return "UNKNOWN", ""
 	}
 
 	status := strings.TrimSpace(string(pwm1EnableData))
@@ -42,7 +44,8 @@ func GetFanspeed() (string, string) {
 
 	pwm1Data, err := os.ReadFile(pwm1Path)
 	if err != nil {
-		log.Fatalf("Error reading pwm1 file: %v", err)
+		log.Printf("Warning: Error reading pwm1 file: %v", err)
+		return fanMode, ""
 	}
 
 	speed := strings.TrimSpace(string(pwm1Data))
